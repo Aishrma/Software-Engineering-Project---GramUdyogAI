@@ -1,0 +1,98 @@
+@startuml
+title Activity Diagram: Complete User Journey for AI Business Suggestion
+
+start
+
+:User opens GramUdyogAI platform;
+
+if (User authenticated?) then (No)
+  :Navigate to Login/Register page;
+  :Enter credentials;
+  :Submit form;
+  
+  if (Valid credentials?) then (Yes)
+    :Create session with JWT token;
+    :Store token in browser;
+  else (No)
+    :Display error message;
+    stop
+  endif
+else (Yes)
+  :Verify JWT token;
+endif
+
+:Navigate to Dashboard;
+:View available features;
+
+repeat
+  :Select "Business Suggestions";
+
+  if (Profile completed?) then (No)
+    :Navigate to Profile page;
+    :Enter skills, resources, location;
+    :Save profile information;
+  else (Yes)
+    :Load existing profile;
+  endif
+
+  :Fill business suggestion form;
+  note right
+    - Skills
+    - Available resources
+    - Location
+    - Budget constraints
+  end note
+
+  :Submit request;
+
+  fork
+    :Send data to backend API;
+    :Validate input data;
+    
+    if (Data valid?) then (Yes)
+      :Query user profile from database;
+      :Prepare AI prompt with context;
+      :Send request to AI service;
+      :Receive AI-generated suggestions;
+      :Process and format results;
+      :Save suggestions to database;
+    else (No)
+      :Return validation error;
+      stop
+    endif
+  fork again
+    :Create notification;
+    :Store in notification table;
+  end fork
+
+  :Return business suggestions to frontend;
+
+  :Display suggestions to user;
+
+  if (User wants translation?) then (Yes)
+    :Select target language;
+    :Send translation request;
+    :Translate suggestions;
+    :Display translated content;
+  endif
+
+  if (User wants audio summary?) then (Yes)
+    :Generate audio from text;
+    :Play audio summary;
+  endif
+
+  :User reviews suggestions;
+
+  if (Save for later?) then (Yes)
+    :Bookmark suggestions;
+    :Store in user favorites;
+  endif
+
+repeat while (Explore more features?) is (Yes)
+->No;
+
+:Logout or close application;
+
+stop
+
+@enduml

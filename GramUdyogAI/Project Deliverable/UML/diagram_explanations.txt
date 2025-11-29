@@ -1,0 +1,626 @@
+====================================================================================================
+                        UML DIAGRAMS EXPLANATION FOR GRAMUDYOGAI PROJECT
+====================================================================================================
+
+PROJECT: GramUdyogAI - Rural Entrepreneurship Empowerment Platform
+DOCUMENT: Comprehensive UML Diagram Explanations
+DATE: November 17, 2025
+
+====================================================================================================
+
+1. CLASS DIAGRAM (class_diagram.puml)
+====================================================================================================
+
+PURPOSE:
+The Class Diagram shows the static structure of the GramUdyogAI system, illustrating all the 
+classes, their attributes, methods, and relationships.
+
+KEY COMPONENTS:
+
+A) User Management Package:
+   - BaseUser: Abstract class representing all user types with common attributes (userId, email, 
+     password, etc.) and methods (register, login, logout)
+   - Individual, Company, NGO, Investor: Concrete classes inheriting from BaseUser, each with 
+     specific attributes relevant to their user type
+
+B) Core Features Package:
+   - Profile: Stores user skills, resources, location, and experience
+   - BusinessSuggestion: Represents AI-generated business recommendations
+   - GovernmentScheme: Database of government schemes with eligibility criteria
+   - Course: Educational courses available to users
+   - Job: Job postings and opportunities
+   - Event: Community events and hackathons
+   - Project: User projects for showcasing
+   - Notification: System notifications for users
+
+C) AI Services Package:
+   - RecommenderService: Generates personalized recommendations
+   - TranslationService: Handles multilingual support
+   - SummaryService: Creates YouTube video summaries and audio
+   - AIAssistant: Provides conversational AI assistance
+   - STTService: Speech-to-text conversion
+
+D) Database Layer:
+   - Database: Handles all data persistence operations
+
+RELATIONSHIPS:
+- Inheritance: User types inherit from BaseUser
+- Association: Users have profiles, receive suggestions, post jobs
+- Dependency: Services depend on AI models and databases
+- Aggregation: RecommenderService uses Profile to generate suggestions
+
+====================================================================================================
+
+2. USE CASE DIAGRAM (use_case_diagram.puml)
+====================================================================================================
+
+PURPOSE:
+The Use Case Diagram illustrates the functional requirements of the system from the user's 
+perspective, showing interactions between different user types and system features.
+
+KEY ACTORS:
+- User (base actor): Common functionalities available to all users
+- Individual: Rural entrepreneurs seeking business opportunities
+- Company: Organizations posting jobs
+- NGO: Non-profit organizations
+- Investor: Individuals/entities looking for investment opportunities
+
+USE CASE PACKAGES:
+
+A) Authentication & Profile:
+   - Register/Login/Logout: User account management
+   - Manage Profile: Update skills, resources, and personal information
+   - Update Password: Security management
+   - View Dashboard: Access personalized dashboard
+
+B) AI-Powered Features:
+   - Get AI Recommendations: Business, course, and scheme suggestions
+   - Use AI Assistant: Conversational AI support
+   - Get YouTube Audio Summary: Convert videos to audio summaries
+   - Translate Content: Multilingual support
+   - Speech-to-Text Conversion: Voice input capability
+
+C) Resources & Opportunities:
+   - Access Government Schemes: Browse available schemes
+   - Search & Filter Schemes: Find relevant schemes
+   - Manage Job Postings: Create and manage job listings
+   - Apply for Jobs: Submit job applications
+   - Browse Courses: Explore educational content
+
+D) Community & Networking:
+   - View Projects & Profiles: Network with other users
+   - Create/Manage Events: Organize community events
+   - Showcase Projects: Display user projects
+   - Receive Notifications: Get system updates
+
+RELATIONSHIPS:
+- <<includes>>: Mandatory sub-functionality (e.g., Login includes Profile access)
+- <<extends>>: Optional enhancement (e.g., Translation extends Summary)
+
+====================================================================================================
+
+3. SEQUENCE DIAGRAM (sequence_diagram.puml)
+====================================================================================================
+
+PURPOSE:
+The Sequence Diagram shows the detailed interaction flow for getting AI business suggestions, 
+including authentication, data processing, and response generation.
+
+FLOW DESCRIPTION:
+
+1. User Navigation (Steps 1-2):
+   - User navigates to Business Suggestion page
+   - Frontend verifies JWT token with Auth Middleware
+
+2. Form Submission (Steps 3-4):
+   - User fills and submits the suggestion form
+   - Frontend sends POST request with authorization header
+
+3. Authentication (Steps 5-8):
+   - Router validates user session
+   - Auth Middleware verifies credentials with Database
+   - Authorization granted to proceed
+
+4. Data Processing (Steps 9-11):
+   - Core Logic fetches user profile from Database
+   - Enhanced LLM Service prepares AI prompt
+   - Request sent to External AI Service (OpenAI/Groq)
+
+5. AI Processing (Steps 12-13):
+   - AI Service processes the request
+   - Returns generated business suggestions
+
+6. Data Persistence (Steps 14-17):
+   - Core saves suggestions to Database
+   - Notification Service creates user notification
+   - Notification stored in Database
+
+7. Response Delivery (Steps 18-20):
+   - Suggestions returned to Frontend
+   - Frontend parses and formats data
+   - User views the rendered suggestions
+
+8. Alternative Flow - Translation (Steps 21-26):
+   - User requests translation
+   - System translates content via AI Service
+   - Displays translated content to user
+
+KEY COMPONENTS:
+- Participants: User, Frontend, Auth, Router, Core Logic, LLM Service, AI Service, Database, 
+  Notification
+- Messages: Synchronous calls with return values
+- Alt Fragment: Alternative flow for translation feature
+
+====================================================================================================
+
+4. ACTIVITY DIAGRAM (activity_diagram.puml)
+====================================================================================================
+
+PURPOSE:
+The Activity Diagram illustrates the complete workflow and decision points in the user journey 
+for obtaining AI business suggestions.
+
+WORKFLOW STEPS:
+
+1. Initial Access:
+   - User opens GramUdyogAI platform
+   - Check if user is authenticated
+
+2. Authentication Flow (if not authenticated):
+   - Navigate to Login/Register page
+   - Enter credentials and submit
+   - If valid: Create JWT session and store token
+   - If invalid: Display error and stop
+
+3. Dashboard Navigation:
+   - Verify JWT token
+   - Navigate to Dashboard
+   - View available features
+
+4. Profile Check:
+   - Select "Business Suggestions"
+   - Check if profile is completed
+   - If not: Navigate to Profile page, enter details, save
+   - If yes: Load existing profile
+
+5. Suggestion Request:
+   - Fill business suggestion form (skills, resources, location, budget)
+   - Submit request
+   - Fork into two parallel processes:
+     a) Main processing: Validate, query database, prepare AI prompt, get suggestions, save
+     b) Notification: Create and store notification
+
+6. Display Results:
+   - Return suggestions to frontend
+   - Display to user
+
+7. Optional Features:
+   - Translation: Select language, translate, display
+   - Audio Summary: Generate audio, play
+
+8. User Actions:
+   - Review suggestions
+   - Optionally bookmark for later
+   - Decide to explore more features or logout
+
+9. Loop:
+   - If exploring more: Return to feature selection
+   - If not: Logout or close application
+
+DECISION POINTS:
+- Authentication status
+- Credential validity
+- Profile completion
+- Data validation
+- Translation request
+- Audio summary request
+- Save for later
+- Explore more features
+
+====================================================================================================
+
+5. SWIMLANE DIAGRAM (swimlane_diagram.puml)
+====================================================================================================
+
+PURPOSE:
+The Swimlane Diagram shows the interaction between different actors (users and systems) across 
+multiple scenarios, clearly delineating responsibilities.
+
+SWIMLANES (ACTORS):
+
+1. Rural Entrepreneur (Primary User):
+   - Accesses platform and submits business ideas
+   - Reviews recommendations
+   - Applies for jobs and schemes
+   - Enrolls in courses
+   - Participates in events
+
+2. System Backend:
+   - Authenticates users
+   - Processes AI requests
+   - Matches jobs with skills
+   - Filters eligible schemes
+   - Tracks progress
+
+3. AI Service Layer:
+   - Analyzes skills and resources
+   - Generates business suggestions
+   - Returns recommendations
+
+4. Investor:
+   - Browses projects
+   - Reviews entrepreneur profiles
+   - Makes investment offers
+
+5. Company/NGO:
+   - Posts job listings
+   - Reviews applications
+   - Schedules interviews
+   - Organizes events
+   - Provides mentorship
+
+WORKFLOW SCENARIOS:
+
+A) Business Suggestion Flow:
+   Entrepreneur → Backend → AI Service → Entrepreneur
+
+B) Funding Flow:
+   Entrepreneur → Investor (if funding needed) → Entrepreneur
+
+C) Job Application Flow:
+   Entrepreneur → Company/NGO → Backend → Entrepreneur
+
+D) Training Flow:
+   Entrepreneur → Backend → Entrepreneur
+
+E) Scheme Application Flow:
+   Entrepreneur → Backend → Entrepreneur
+
+F) Community Support Flow:
+   Entrepreneur → NGO → Entrepreneur
+
+INTERACTIONS:
+- Vertical flow within each swimlane shows sequential actions
+- Horizontal arrows show communication between actors
+- Decision points determine which swimlanes participate
+
+====================================================================================================
+
+6. DATA FLOW DIAGRAM - LEVEL 0 (dataflow_diagram_level0.puml)
+====================================================================================================
+
+PURPOSE:
+The Context Diagram (DFD Level 0) provides a high-level overview of the entire system, showing 
+external entities and their data exchanges with the GramUdyogAI system.
+
+EXTERNAL ENTITIES:
+
+1. Rural Entrepreneur:
+   - Inputs: User credentials, profile data, business queries
+   - Outputs: Business suggestions, courses, schemes, jobs, audio summaries
+
+2. Company/NGO:
+   - Inputs: Job postings, event details
+   - Outputs: Applications, candidate profiles
+
+3. Investor:
+   - Inputs: Investment criteria
+   - Outputs: Project listings, entrepreneur profiles
+
+4. OpenAI/Groq AI Services:
+   - Inputs: User context, prompts
+   - Outputs: AI responses, recommendations
+
+5. Government API:
+   - Inputs: Scheme queries
+   - Outputs: Scheme data
+
+6. YouTube API:
+   - Inputs: Video URL
+   - Outputs: Video content
+
+CENTRAL SYSTEM:
+- GramUdyogAI System: Central hub processing all data flows
+
+DATA FLOWS:
+- Bidirectional arrows show two-way communication
+- Labels indicate the type of data being exchanged
+
+====================================================================================================
+
+7. DATA FLOW DIAGRAM - LEVEL 1 (dataflow_diagram_level1.puml)
+====================================================================================================
+
+PURPOSE:
+The Detailed DFD (Level 1) breaks down the GramUdyogAI system into major processes, showing 
+internal data flows and data stores.
+
+PROCESSES:
+
+1.0 Authentication & Authorization:
+   - Verifies user credentials
+   - Issues JWT tokens
+   - Manages user sessions
+
+2.0 Profile Management:
+   - Stores and updates user profiles
+   - Manages skills and resources
+
+3.0 AI Business Suggestion:
+   - Fetches user profile
+   - Generates AI prompts
+   - Creates business recommendations
+
+4.0 Course Recommendation:
+   - Analyzes user skills
+   - Queries AI for relevant courses
+   - Returns personalized course lists
+
+5.0 Government Scheme Finder:
+   - Checks user eligibility
+   - Queries government APIs
+   - Caches and returns schemes
+
+6.0 Job Board Management:
+   - Stores job postings
+   - Matches skills with jobs
+   - Manages applications
+
+7.0 YouTube Summarization:
+   - Processes video URLs
+   - Generates summaries
+   - Creates audio versions
+
+8.0 Translation Service:
+   - Translates content
+   - Supports multiple languages
+
+9.0 Notification System:
+   - Creates notifications
+   - Stores in database
+   - Pushes to users
+
+DATA STORES:
+- D1: Users Database
+- D2: Profiles Database
+- D3: Suggestions Database
+- D4: Courses Database
+- D5: Schemes Database
+- D6: Jobs Database
+- D7: Notifications Database
+
+DATA FLOWS:
+- Solid arrows show data movement
+- Each flow is labeled with data type
+- Shows integration points with external services
+
+====================================================================================================
+
+8. ENTITY-RELATIONSHIP DIAGRAM (er_diagram.puml)
+====================================================================================================
+
+PURPOSE:
+The ER Diagram represents the complete database schema for GramUdyogAI, showing all entities, 
+their attributes, and relationships.
+
+MAIN ENTITIES:
+
+1. User (Central Entity):
+   - Attributes: user_id (PK), email, password_hash, user_type, is_active, is_verified, 
+     timestamps
+   - Relationships: 1:1 with Profile, 1:Many with most other entities
+
+2. User Type Entities (Specialization):
+   - Individual: first_name, last_name, phone, DOB, gender
+   - Company: company_name, registration_number, industry, established_year, size
+   - NGO: ngo_name, registration_number, focus_area, established_year
+   - Investor: investor_name, investment_capacity, focus_sectors, investment_stage
+
+3. Profile:
+   - Stores user skills, resources, location, experience, education
+   - 1:1 relationship with User
+
+4. BusinessSuggestion:
+   - Stores AI-generated suggestions
+   - Links to User and Profile
+   - Includes investment details and feasibility scores
+
+5. GovernmentScheme:
+   - Independent entity with scheme details
+   - Linked to users via UserScheme junction table
+
+6. Course:
+   - Course catalog with provider, duration, skill level
+   - Linked via CourseEnrollment
+
+7. Job:
+   - Job postings by companies
+   - Related to JobApplication
+
+8. JobApplication:
+   - Junction entity between User and Job
+   - Tracks application status
+
+9. Event:
+   - Community events
+   - Linked via EventRegistration
+
+10. Project:
+    - User projects for showcasing
+    - Includes funding information
+
+11. Notification:
+    - System notifications
+    - References other entities via reference_id
+
+12. YouTubeSummary:
+    - Stores video summaries and audio
+    - Linked to requesting user
+
+13. UserScheme:
+    - Junction table linking users to schemes
+    - Tracks application status
+
+14. CourseEnrollment:
+    - Junction table for course enrollment
+    - Tracks completion status
+
+RELATIONSHIP TYPES:
+- One-to-One (||--||): User to Profile
+- One-to-Many (||--o{): User to Jobs, Events, Projects
+- Many-to-Many (via junction tables): User-Scheme, User-Course
+
+KEY FEATURES:
+- Primary Keys (PK): Uniquely identify records
+- Foreign Keys (FK): Establish relationships
+- Enums: Constrain values (status, types)
+- JSON fields: Store complex data structures
+- Timestamps: Track creation and updates
+
+====================================================================================================
+
+9. STATE DIAGRAM (state_diagram.puml)
+====================================================================================================
+
+PURPOSE:
+The State Diagram illustrates the lifecycle states and transitions for key entities in the 
+GramUdyogAI system.
+
+STATE MACHINES:
+
+A) User Account States:
+   - Unregistered → Registered (via registration)
+   - Registered → EmailVerified (via email confirmation)
+   - EmailVerified → Active (via profile completion)
+   - Active ↔ Suspended (violation/appeal)
+   - Active ↔ Inactive (inactivity/login)
+   - Active → Deleted (user request)
+
+B) Business Suggestion States:
+   - Requested → Processing (form submission)
+   - Processing → Validating (input check)
+   - Validating → Failed (invalid data) → Requested (correction)
+   - Validating → AIProcessing (valid data)
+   - AIProcessing → Generated (AI response)
+   - Generated → Displayed (formatted output)
+   - Displayed → Bookmarked/Translated/AudioGenerated
+   - Displayed/Bookmarked → Archived (after time/removal)
+
+C) Job Application States:
+   - JobPosted → ApplicationSubmitted (user applies)
+   - ApplicationSubmitted → UnderReview (recruiter views)
+   - UnderReview → Shortlisted/Rejected
+   - Shortlisted → InterviewScheduled
+   - InterviewScheduled → Hired/Rejected
+
+D) Event States:
+   - EventCreated → RegistrationOpen (published)
+   - RegistrationOpen → RegistrationClosed (deadline)
+   - RegistrationClosed → Ongoing (event starts)
+   - Ongoing → Completed (event ends)
+   - Completed → Archived (after 90 days)
+   - Alternative: EventCreated/RegistrationOpen → Cancelled
+
+E) Course Enrollment States:
+   - NotEnrolled → Enrolled (user enrolls)
+   - Enrolled → InProgress (start course)
+   - InProgress → Completed/Dropped
+   - Completed → Certified (certificate issued)
+
+TRANSITIONS:
+- Labeled with trigger events
+- Shows valid state changes
+- Indicates terminal states ([*])
+
+NOTES:
+- Each state machine is independent
+- Shows lifecycle from creation to termination
+- Includes error handling and alternative paths
+
+====================================================================================================
+
+10. OBJECT DIAGRAM (object_diagram.puml)
+====================================================================================================
+
+PURPOSE:
+The Object Diagram provides a snapshot of the system at runtime, showing actual instances of 
+objects and their relationships at a specific moment.
+
+RUNTIME INSTANCES:
+
+A) User Instance (Ramesh Kumar):
+   - Individual user from Sangli, Maharashtra
+   - Active account with complete profile
+   - Skills: Farming, Animal Husbandry, Carpentry
+   - Resources: 5 acres land, tools, water source
+
+B) Business Suggestions:
+   - Suggestion 1: Organic Vegetable Farming (₹50,000 investment, ₹1.5L revenue potential, 
+     85% feasibility)
+   - Suggestion 2: Dairy Farming Business (₹2L investment, ₹4L revenue potential, 
+     78% feasibility)
+
+C) Government Schemes:
+   - PM-KISAN Scheme: ₹6000/year for farmers
+   - NABARD Dairy Farming Scheme: 25% subsidy for dairy units
+
+D) Company Instance (AgroTech Solutions):
+   - Agriculture Technology company
+   - 50-100 employees
+   - Posted farm manager job
+
+E) Job Application:
+   - Ramesh applied for Farm Manager position
+   - Status: Pending
+   - Applied: November 15, 2025
+
+F) Course Enrollment:
+   - Enrolled in "Modern Organic Farming Techniques"
+   - Provider: Skill India
+   - Status: In Progress
+
+G) Notifications:
+   - Notification 1: New business suggestion (unread)
+   - Notification 2: Job application under review (read)
+
+H) YouTube Summary:
+   - Video: "Organic Farming Best Practices"
+   - Language: Marathi
+   - Created: November 15, 2025
+
+I) Services:
+   - RecommenderService: Using GPT-4 model
+   - TranslationService: Supporting Hindi, Marathi, Tamil, Telugu
+
+RELATIONSHIPS:
+- Solid lines: Direct associations (user has profile)
+- Dashed lines: Dependencies (recommender generated suggestions)
+- Shows actual data values and timestamps
+- Demonstrates how objects interact in real scenarios
+
+CONTEXT:
+This snapshot represents a rural entrepreneur actively using the platform to explore business 
+opportunities, apply for jobs, enroll in courses, and access government schemes.
+
+====================================================================================================
+
+CONCLUSION
+====================================================================================================
+
+These UML diagrams collectively provide a comprehensive view of the GramUdyogAI system:
+
+- STRUCTURAL VIEWS (Class, Object, ER Diagrams): Show system organization and data structure
+- BEHAVIORAL VIEWS (Use Case, Activity, State, Sequence Diagrams): Illustrate system dynamics
+- INTERACTION VIEWS (Swimlane, Sequence Diagrams): Show collaboration between components
+- DATA VIEWS (DFD, ER Diagrams): Represent information flow and storage
+
+Together, they serve as complete technical documentation for the GramUdyogAI platform, supporting:
+- System design and architecture decisions
+- Development team understanding
+- Stakeholder communication
+- Future maintenance and enhancements
+- Documentation for SRS (Software Requirements Specification)
+
+====================================================================================================
+END OF DOCUMENT
+====================================================================================================

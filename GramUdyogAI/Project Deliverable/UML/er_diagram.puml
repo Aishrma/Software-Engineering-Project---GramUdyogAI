@@ -1,0 +1,256 @@
+@startuml
+title Entity-Relationship Diagram - GramUdyogAI Database Schema
+
+!define TABLE entity
+!define PK <b><color:red>
+!define FK <color:blue>
+
+entity "User" as user {
+  PK user_id : UUID
+  --
+  email : VARCHAR(255)
+  password_hash : VARCHAR(255)
+  user_type : ENUM('Individual', 'Company', 'NGO', 'Investor')
+  is_active : BOOLEAN
+  is_verified : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  last_login : TIMESTAMP
+}
+
+entity "Individual" as individual {
+  PK individual_id : UUID
+  --
+  FK user_id : UUID
+  first_name : VARCHAR(100)
+  last_name : VARCHAR(100)
+  phone_number : VARCHAR(20)
+  date_of_birth : DATE
+  gender : VARCHAR(20)
+}
+
+entity "Company" as company {
+  PK company_id : UUID
+  --
+  FK user_id : UUID
+  company_name : VARCHAR(255)
+  registration_number : VARCHAR(100)
+  industry : VARCHAR(100)
+  established_year : INT
+  size : VARCHAR(50)
+}
+
+entity "NGO" as ngo {
+  PK ngo_id : UUID
+  --
+  FK user_id : UUID
+  ngo_name : VARCHAR(255)
+  registration_number : VARCHAR(100)
+  focus_area : VARCHAR(255)
+  established_year : INT
+}
+
+entity "Investor" as investor {
+  PK investor_id : UUID
+  --
+  FK user_id : UUID
+  investor_name : VARCHAR(255)
+  investment_capacity : DECIMAL(15,2)
+  focus_sectors : JSON
+  investment_stage : VARCHAR(50)
+}
+
+entity "Profile" as profile {
+  PK profile_id : UUID
+  --
+  FK user_id : UUID
+  skills : JSON
+  resources : JSON
+  location : VARCHAR(255)
+  experience : TEXT
+  education : TEXT
+  bio : TEXT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "BusinessSuggestion" as business {
+  PK suggestion_id : UUID
+  --
+  FK user_id : UUID
+  FK profile_id : UUID
+  title : VARCHAR(255)
+  description : TEXT
+  investment_required : DECIMAL(15,2)
+  potential_revenue : DECIMAL(15,2)
+  feasibility_score : FLOAT
+  category : VARCHAR(100)
+  created_at : TIMESTAMP
+  is_bookmarked : BOOLEAN
+}
+
+entity "GovernmentScheme" as scheme {
+  PK scheme_id : UUID
+  --
+  name : VARCHAR(255)
+  description : TEXT
+  eligibility_criteria : JSON
+  benefits : TEXT
+  application_process : TEXT
+  application_url : VARCHAR(500)
+  deadline : DATE
+  category : VARCHAR(100)
+  state : VARCHAR(100)
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "Course" as course {
+  PK course_id : UUID
+  --
+  title : VARCHAR(255)
+  provider : VARCHAR(255)
+  description : TEXT
+  duration : VARCHAR(100)
+  skill_level : ENUM('Beginner', 'Intermediate', 'Advanced')
+  certification : BOOLEAN
+  url : VARCHAR(500)
+  category : VARCHAR(100)
+  rating : FLOAT
+  created_at : TIMESTAMP
+}
+
+entity "Job" as job {
+  PK job_id : UUID
+  --
+  FK posted_by : UUID
+  title : VARCHAR(255)
+  description : TEXT
+  location : VARCHAR(255)
+  salary_range : VARCHAR(100)
+  job_type : VARCHAR(50)
+  experience_required : VARCHAR(100)
+  skills_required : JSON
+  posted_date : TIMESTAMP
+  deadline : DATE
+  status : ENUM('Open', 'Closed', 'Filled')
+}
+
+entity "JobApplication" as application {
+  PK application_id : UUID
+  --
+  FK job_id : UUID
+  FK applicant_id : UUID
+  cover_letter : TEXT
+  resume_url : VARCHAR(500)
+  status : ENUM('Pending', 'Reviewed', 'Shortlisted', 'Rejected', 'Accepted')
+  applied_date : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "Event" as event {
+  PK event_id : UUID
+  --
+  FK organizer_id : UUID
+  title : VARCHAR(255)
+  description : TEXT
+  event_date : TIMESTAMP
+  location : VARCHAR(255)
+  event_type : VARCHAR(100)
+  max_participants : INT
+  registration_deadline : DATE
+  created_at : TIMESTAMP
+}
+
+entity "EventRegistration" as event_reg {
+  PK registration_id : UUID
+  --
+  FK event_id : UUID
+  FK user_id : UUID
+  registration_date : TIMESTAMP
+  attendance_status : ENUM('Registered', 'Attended', 'Cancelled')
+}
+
+entity "Project" as project {
+  PK project_id : UUID
+  --
+  FK user_id : UUID
+  title : VARCHAR(255)
+  description : TEXT
+  status : ENUM('Planning', 'In Progress', 'Completed')
+  visibility : ENUM('Public', 'Private')
+  funding_required : DECIMAL(15,2)
+  funding_received : DECIMAL(15,2)
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "Notification" as notification {
+  PK notification_id : UUID
+  --
+  FK user_id : UUID
+  message : TEXT
+  notification_type : VARCHAR(100)
+  is_read : BOOLEAN
+  reference_id : UUID
+  reference_type : VARCHAR(100)
+  created_at : TIMESTAMP
+}
+
+entity "YouTubeSummary" as youtube {
+  PK summary_id : UUID
+  --
+  FK user_id : UUID
+  video_url : VARCHAR(500)
+  video_title : VARCHAR(255)
+  summary_text : TEXT
+  audio_url : VARCHAR(500)
+  language : VARCHAR(50)
+  created_at : TIMESTAMP
+}
+
+entity "UserScheme" as user_scheme {
+  PK user_scheme_id : UUID
+  --
+  FK user_id : UUID
+  FK scheme_id : UUID
+  application_status : ENUM('Interested', 'Applied', 'Approved', 'Rejected')
+  applied_date : DATE
+  notes : TEXT
+}
+
+entity "CourseEnrollment" as enrollment {
+  PK enrollment_id : UUID
+  --
+  FK user_id : UUID
+  FK course_id : UUID
+  enrollment_date : TIMESTAMP
+  completion_status : ENUM('Enrolled', 'In Progress', 'Completed', 'Dropped')
+  completion_date : DATE
+  certificate_url : VARCHAR(500)
+}
+
+' Relationships
+user ||--o{ individual : "is"
+user ||--o{ company : "is"
+user ||--o{ ngo : "is"
+user ||--o{ investor : "is"
+user ||--|| profile : "has"
+user ||--o{ business : "receives"
+user ||--o{ job : "posts"
+user ||--o{ application : "submits"
+user ||--o{ event : "organizes"
+user ||--o{ event_reg : "registers for"
+user ||--o{ project : "creates"
+user ||--o{ notification : "receives"
+user ||--o{ youtube : "requests"
+user ||--o{ user_scheme : "applies for"
+user ||--o{ enrollment : "enrolls in"
+
+profile ||--o{ business : "generates"
+job ||--o{ application : "has"
+event ||--o{ event_reg : "has"
+scheme ||--o{ user_scheme : "linked to"
+course ||--o{ enrollment : "has"
+
+@enduml

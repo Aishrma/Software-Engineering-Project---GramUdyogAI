@@ -1,0 +1,84 @@
+@startuml
+left to right direction
+
+actor User
+actor Individual
+actor Company
+actor NGO
+actor Investor
+
+User <|-- Individual
+User <|-- Company
+User <|-- NGO
+User <|-- Investor
+
+rectangle "GramUdyogAI System" {
+  package "Authentication & Profile" {
+    usecase "Register/Login/Logout" as UC_Auth
+    usecase "Manage Profile (Skills, Resources)" as UC_Profile
+    usecase "Update Password" as UC_Password
+    usecase "View Dashboard" as UC_Dashboard
+  }
+  
+  package "AI-Powered Features" {
+    usecase "Get AI Recommendations\n(Business, Courses, Schemes)" as UC_Recommend
+    usecase "Use AI Assistant" as UC_AIAssistant
+    usecase "Get YouTube Audio Summary" as UC_Summary
+    usecase "Translate Content" as UC_Translate
+    usecase "Speech-to-Text Conversion" as UC_STT
+  }
+  
+  package "Resources & Opportunities" {
+    usecase "Access Government Schemes" as UC_Schemes
+    usecase "Search & Filter Schemes" as UC_SearchSchemes
+    usecase "Manage Job Postings" as UC_Jobs
+    usecase "Apply for Jobs" as UC_ApplyJobs
+    usecase "Browse Courses" as UC_Courses
+  }
+  
+  package "Community & Networking" {
+    usecase "View Projects & Profiles" as UC_View
+    usecase "Create/Manage Events" as UC_Events
+    usecase "Showcase Projects" as UC_Projects
+    usecase "Receive Notifications" as UC_Notifications
+  }
+}
+
+' Authentication & Profile connections
+User -- UC_Auth
+User -- UC_Profile
+User -- UC_Password
+User -- UC_Dashboard
+
+' AI-Powered Features connections
+User -- UC_Translate
+User -- UC_AIAssistant
+User -- UC_STT
+
+Individual -- UC_Recommend
+Individual -- UC_Summary
+Individual -- UC_ApplyJobs
+
+' Resources & Opportunities connections
+User -- UC_Schemes
+User -- UC_SearchSchemes
+User -- UC_Courses
+
+Company -- UC_Jobs
+NGO -- UC_Jobs
+Investor -- UC_View
+
+' Community & Networking connections
+User -- UC_Events
+User -- UC_Projects
+User -- UC_Notifications
+
+' Relationships
+UC_Auth .> UC_Profile : <<includes>>
+UC_Auth .> UC_Dashboard : <<includes>>
+UC_Recommend .> UC_Profile : <<extends>>
+UC_SearchSchemes .> UC_Schemes : <<extends>>
+UC_Jobs .> UC_ApplyJobs : <<extends>>
+UC_Summary .> UC_Translate : <<includes>>
+
+@enduml
