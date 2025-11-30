@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import ParticleBackground from "../ui/ParticleBackground";
-import { 
-  Phone, Lock, Eye, EyeOff, User, Building2, 
+import {
+  Phone, Lock, Eye, EyeOff, User, Building2,
   Users, Award, Globe, AlertCircle, CheckCircle,
   Mic, Square
 } from 'lucide-react';
@@ -52,7 +52,7 @@ const Auth: React.FC = () => {
 
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-  
+
   const [form, setForm] = useState<AuthForm>({
     phone: '',
     password: '',
@@ -127,7 +127,7 @@ const Auth: React.FC = () => {
     'At least one uppercase letter',
     'At least one lowercase letter',
     'At least one number',
-    'At least one special character (#@$!%*?&)',
+    'At least one special character (@$!%*?&)',
   ];
 
   function validatePasswordStrength(password: string) {
@@ -136,7 +136,7 @@ const Auth: React.FC = () => {
       uppercase: /[A-Z]/.test(password),
       lowercase: /[a-z]/.test(password),
       number: /[0-9]/.test(password),
-      special: /[#@$!%*?&]/.test(password),
+      special: /[@$!%*?&]/.test(password),
     };
   }
 
@@ -145,8 +145,17 @@ const Auth: React.FC = () => {
       setError(t('validation.phoneRequired'));
       return false;
     }
+
+    // Auto-add +91 for Indian numbers if no country code is present
+    let phoneNumber = form.phone.trim();
+    if (!/^\+/.test(phoneNumber) && /^[6-9]\d{9}$/.test(phoneNumber)) {
+      // Indian mobile number without country code
+      phoneNumber = '+91' + phoneNumber;
+      setForm(prev => ({ ...prev, phone: phoneNumber }));
+    }
+
     // Phone validation (same as backend)
-    if (!/^\+?[1-9]\d{1,14}$/.test(form.phone.trim())) {
+    if (!/^\+?[1-9]\d{1,14}$/.test(phoneNumber)) {
       setError(t('validation.phoneInvalid'));
       return false;
     }
@@ -219,7 +228,7 @@ const Auth: React.FC = () => {
         console.log('Login response:', data);
         setAuthToken(data.access_token);
         setUserId(data.user_id);
-        
+
         setSuccess(t('messages.loginSuccess'));
         setTimeout(() => {
           navigate('/profile');
@@ -290,27 +299,27 @@ const Auth: React.FC = () => {
       if (isRecording || isProcessing) {
         return;
       }
-      
+
       setCurrentVoiceField(field);
       setAudioChunks([]);
       setAudioUrl('');
-      
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-      
+
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           setAudioChunks(prev => [...prev, event.data]);
         }
       };
-      
+
       recorder.onstop = async () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
         await processVoiceInput(audioBlob);
       };
-      
+
       setMediaRecorder(recorder);
       recorder.start();
       setIsRecording(true);
@@ -331,31 +340,31 @@ const Auth: React.FC = () => {
 
   const processVoiceInput = async (audioBlob: Blob) => {
     if (!currentVoiceField) return;
-    
+
     try {
       setIsProcessing(true);
-      
+
       // Get language from i18n
       const language = i18n.language || 'en';
-      
+
       // Create form data
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
       formData.append('language', language);
-      
+
       // Send to backend STT service
       const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
         method: 'POST',
         body: formData
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         const transcript = data.text;
-        
+
         // Process the transcript based on field type
         let processedValue = transcript.trim();
-        
+
         switch (currentVoiceField) {
           case 'phone':
             // Extract numbers from voice input
@@ -372,14 +381,14 @@ const Auth: React.FC = () => {
           case 'name':
           case 'organization':
             // Capitalize first letter of each word
-            processedValue = transcript.split(' ').map((word: string) => 
+            processedValue = transcript.split(' ').map((word: string) =>
               word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
             ).join(' ');
             break;
           default:
             processedValue = transcript;
         }
-        
+
         // Only update if the field is empty or if user explicitly wants to replace
         const currentValue = form[currentVoiceField];
         if (!currentValue || (typeof currentValue === 'string' && currentValue.trim() === '')) {
@@ -419,7 +428,7 @@ const Auth: React.FC = () => {
             },
           });
         }
-        
+
       } else {
         const errorData = await response.json();
         setError(`Voice transcription failed: ${errorData.error || 'Unknown error'}`);
@@ -474,7 +483,7 @@ const Auth: React.FC = () => {
   return (
     <div className="relative min-h-screen overflow-hidden">
       <ParticleBackground />
-      
+
       {/* Background gradients */}
       <div className="absolute inset-0 z-0">
         <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(38,38,38,0.3)_1px,transparent_1px)] bg-[length:24px_24px]"></div>
@@ -510,11 +519,10 @@ const Auth: React.FC = () => {
                       <button
                         key={userType.type}
                         onClick={() => selectUserType(userType.type as AuthForm['userType'])}
-                        className={`p-3 border rounded-lg text-left transition-colors ${
-                          form.userType === userType.type
-                            ? 'border-purple-500 bg-purple-500/20'
-                            : 'border-gray-600 hover:border-gray-500 bg-gray-800/50'
-                        }`}
+                        className={`p-3 border rounded-lg text-left transition-colors ${form.userType === userType.type
+                          ? 'border-purple-500 bg-purple-500/20'
+                          : 'border-gray-600 hover:border-gray-500 bg-gray-800/50'
+                          }`}
                       >
                         <div className="flex items-center space-x-2">
                           <div className={`w-8 h-8 ${userType.color} rounded-lg flex items-center justify-center`}>

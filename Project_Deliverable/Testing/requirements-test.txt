@@ -1,0 +1,31 @@
+# Testing Dependencies for GramUdyogAI
+
+# Core Testing Framework
+pytest==8.0.0
+pytest-asyncio==0.24.0
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# HTTP Testing
+httpx==0.26.0
+requests-mock==1.11.0
+
+# FastAPI Testing
+fastapi[all]==0.109.0
+
+# Database Testing
+sqlalchemy==2.0.25
+
+# Additional Testing Utilities
+faker==22.6.0
+factory-boy==3.3.0
+freezegun==1.4.0
+
+# Code Quality
+black==24.1.1
+flake8==7.0.0
+mypy==1.8.0
+pylint==3.0.3
+
+# Coverage Reporting
+coverage[toml]==7.4.1
