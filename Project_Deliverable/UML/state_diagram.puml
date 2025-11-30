@@ -1,0 +1,93 @@
+@startuml
+title State Diagram: User Account and Business Suggestion Lifecycle
+
+[*] --> Unregistered
+
+state "User Account States" as UserStates {
+  Unregistered --> Registered : Register with email
+  Registered --> EmailVerified : Verify email
+  EmailVerified --> Active : Complete profile
+  Active --> Suspended : Violation detected
+  Suspended --> Active : Appeal approved
+  Active --> Inactive : No activity > 6 months
+  Inactive --> Active : Login again
+  Active --> Deleted : User requests deletion
+  Deleted --> [*]
+}
+
+state "Business Suggestion States" as BusinessStates {
+  [*] --> Requested
+  Requested --> Processing : Submit form with profile data
+  Processing --> Validating : Check user inputs
+  
+  Validating --> Failed : Invalid data
+  Failed --> Requested : User corrects input
+  
+  Validating --> AIProcessing : Valid data
+  AIProcessing --> Generated : AI returns suggestions
+  Generated --> Displayed : Format and send to frontend
+  
+  Displayed --> Bookmarked : User saves suggestion
+  Displayed --> Translated : User requests translation
+  Translated --> AudioGenerated : User requests audio
+  AudioGenerated --> Played : User plays audio
+  
+  Displayed --> Archived : After 30 days
+  Bookmarked --> Archived : User removes bookmark
+  Archived --> [*]
+}
+
+state "Job Application States" as JobStates {
+  [*] --> JobPosted
+  JobPosted --> ApplicationSubmitted : User applies
+  ApplicationSubmitted --> UnderReview : Recruiter views
+  UnderReview --> Shortlisted : Meets criteria
+  UnderReview --> Rejected : Doesn't meet criteria
+  Shortlisted --> InterviewScheduled : Invite sent
+  InterviewScheduled --> Hired : Interview success
+  InterviewScheduled --> Rejected : Interview failed
+  Hired --> [*]
+  Rejected --> [*]
+}
+
+state "Event States" as EventStates {
+  [*] --> EventCreated
+  EventCreated --> RegistrationOpen : Publish event
+  RegistrationOpen --> RegistrationClosed : Deadline reached
+  RegistrationClosed --> Ongoing : Event starts
+  Ongoing --> Completed : Event ends
+  Completed --> Archived : After 90 days
+  Archived --> [*]
+  
+  EventCreated --> Cancelled : Organizer cancels
+  RegistrationOpen --> Cancelled : Low registrations
+  Cancelled --> [*]
+}
+
+state "Course Enrollment States" as CourseStates {
+  [*] --> NotEnrolled
+  NotEnrolled --> Enrolled : User enrolls
+  Enrolled --> InProgress : Start course
+  InProgress --> Completed : Finish all modules
+  InProgress --> Dropped : User drops out
+  Completed --> Certified : Certificate issued
+  Certified --> [*]
+  Dropped --> [*]
+}
+
+note right of UserStates
+  User authentication and 
+  account lifecycle management
+end note
+
+note right of BusinessStates
+  AI-driven business suggestion
+  generation and management
+end note
+
+note right of JobStates
+  Job posting and application
+  workflow management
+end note
+
+@enduml

@@ -1,0 +1,191 @@
+@startuml
+title Object Diagram: GramUdyogAI System Runtime Instance
+
+object ":Individual" as user1 {
+  userId = "550e8400-e29b-41d4-a716-446655440001"
+  email = "ramesh.kumar@email.com"
+  user_type = "Individual"
+  is_active = true
+  first_name = "Ramesh"
+  last_name = "Kumar"
+  phone_number = "+91-9876543210"
+}
+
+object ":Profile" as profile1 {
+  profileId = "650e8400-e29b-41d4-a716-446655440002"
+  skills = ["Farming", "Animal Husbandry", "Carpentry"]
+  resources = ["5 acres land", "Basic tools", "Water source"]
+  location = "Sangli, Maharashtra"
+  experience = "15 years farming experience"
+  education = "High School"
+}
+
+object ":BusinessSuggestion" as suggestion1 {
+  suggestion_id = "750e8400-e29b-41d4-a716-446655440003"
+  title = "Organic Vegetable Farming"
+  description = "Start organic vegetable cultivation..."
+  investment_required = 50000.00
+  potential_revenue = 150000.00
+  feasibility_score = 0.85
+  category = "Agriculture"
+  is_bookmarked = true
+}
+
+object ":BusinessSuggestion" as suggestion2 {
+  suggestion_id = "750e8400-e29b-41d4-a716-446655440004"
+  title = "Dairy Farming Business"
+  description = "Small-scale dairy with 5-10 cows..."
+  investment_required = 200000.00
+  potential_revenue = 400000.00
+  feasibility_score = 0.78
+  category = "Animal Husbandry"
+  is_bookmarked = false
+}
+
+object ":GovernmentScheme" as scheme1 {
+  scheme_id = "850e8400-e29b-41d4-a716-446655440005"
+  name = "PM-KISAN Scheme"
+  description = "Direct income support to farmers"
+  benefits = "₹6000 per year"
+  category = "Agriculture"
+  state = "All India"
+}
+
+object ":GovernmentScheme" as scheme2 {
+  scheme_id = "850e8400-e29b-41d4-a716-446655440006"
+  name = "NABARD Dairy Farming Scheme"
+  description = "Financial assistance for dairy units"
+  benefits = "Subsidy up to 25%"
+  category = "Animal Husbandry"
+  state = "Maharashtra"
+}
+
+object ":Company" as company1 {
+  userId = "550e8400-e29b-41d4-a716-446655440010"
+  email = "hr@agrotech.com"
+  user_type = "Company"
+  company_name = "AgroTech Solutions"
+  industry = "Agriculture Technology"
+  size = "50-100 employees"
+}
+
+object ":Job" as job1 {
+  job_id = "950e8400-e29b-41d4-a716-446655440011"
+  title = "Farm Manager"
+  description = "Manage organic farm operations"
+  location = "Pune, Maharashtra"
+  salary_range = "₹25,000 - ₹35,000"
+  job_type = "Full-time"
+  skills_required = ["Farming", "Management"]
+  status = "Open"
+}
+
+object ":JobApplication" as application1 {
+  application_id = "a50e8400-e29b-41d4-a716-446655440012"
+  cover_letter = "I have 15 years of farming experience..."
+  status = "Pending"
+  applied_date = "2025-11-15"
+}
+
+object ":Course" as course1 {
+  course_id = "b50e8400-e29b-41d4-a716-446655440013"
+  title = "Modern Organic Farming Techniques"
+  provider = "Skill India"
+  duration = "3 months"
+  skill_level = "Intermediate"
+  certification = true
+  category = "Agriculture"
+}
+
+object ":CourseEnrollment" as enrollment1 {
+  enrollment_id = "c50e8400-e29b-41d4-a716-446655440014"
+  enrollment_date = "2025-11-10"
+  completion_status = "In Progress"
+}
+
+object ":Notification" as notif1 {
+  notification_id = "d50e8400-e29b-41d4-a716-446655440015"
+  message = "New business suggestion available!"
+  notification_type = "Business"
+  is_read = false
+  created_at = "2025-11-17 10:30:00"
+}
+
+object ":Notification" as notif2 {
+  notification_id = "d50e8400-e29b-41d4-a716-446655440016"
+  message = "Your job application is under review"
+  notification_type = "Job"
+  is_read = true
+  created_at = "2025-11-16 14:20:00"
+}
+
+object ":YouTubeSummary" as youtube1 {
+  summary_id = "e50e8400-e29b-41d4-a716-446655440017"
+  video_url = "https://youtube.com/watch?v=abc123"
+  video_title = "Organic Farming Best Practices"
+  summary_text = "Key points: Use natural fertilizers..."
+  language = "Marathi"
+  created_at = "2025-11-15 09:00:00"
+}
+
+object ":UserScheme" as user_scheme1 {
+  user_scheme_id = "f50e8400-e29b-41d4-a716-446655440018"
+  application_status = "Applied"
+  applied_date = "2025-11-10"
+  notes = "Applied for PM-KISAN online portal"
+}
+
+object ":RecommenderService" as recommender {
+  service_name = "AI Recommender"
+  model = "GPT-4"
+}
+
+object ":TranslationService" as translator {
+  service_name = "Translation API"
+  supported_languages = ["Hindi", "Marathi", "Tamil", "Telugu"]
+}
+
+' Relationships between objects
+user1 -- profile1 : "has profile"
+user1 -- suggestion1 : "received"
+user1 -- suggestion2 : "received"
+profile1 -- suggestion1 : "generated from"
+profile1 -- suggestion2 : "generated from"
+
+user1 -- user_scheme1 : "applied for"
+user_scheme1 -- scheme1 : "linked to"
+scheme2 .. user1 : "eligible for"
+
+company1 -- job1 : "posted"
+user1 -- application1 : "submitted"
+application1 -- job1 : "for job"
+
+user1 -- enrollment1 : "enrolled"
+enrollment1 -- course1 : "in course"
+
+user1 -- notif1 : "receives"
+user1 -- notif2 : "receives"
+
+user1 -- youtube1 : "requested"
+
+recommender .. suggestion1 : "generated"
+recommender .. suggestion2 : "generated"
+translator .. youtube1 : "translated"
+
+note bottom of user1
+  Rural Entrepreneur
+  Active user with complete profile
+  Seeking business opportunities
+end note
+
+note bottom of company1
+  Recruiting company
+  Looking for skilled candidates
+end note
+
+note bottom of recommender
+  AI Service handling
+  all recommendation logic
+end note
+
+@enduml
